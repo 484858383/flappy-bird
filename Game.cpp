@@ -45,10 +45,10 @@ void Game::handleEvents()
     {
         if(e.type == sf::Event::Closed)
             m_window.close();
-        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            m_window.close();
         if(e.type == sf::Event::MouseButtonPressed)
             if(e.mouseButton.button == sf::Mouse::Left)
                 m_bird.bounce();
     }
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        m_window.close();
 }
