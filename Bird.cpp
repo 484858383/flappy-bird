@@ -14,7 +14,7 @@ void Bird::draw(sf::RenderTarget& render)
 
 void Bird::bounce()
 {
-    m_velocity = -1800.0f;
+    m_velocity = -1800.0f; //this will shoot the bird up, like jumping
 }
 
 
