@@ -1,7 +1,7 @@
 #include"Bird.h"
 
 Bird::Bird()
-:m_gravity(2.50f), m_velocity(0.0f), m_maxSpeed(350.0f)
+:m_gravity(25.0f), m_velocity(0.0f), m_maxSpeed(550.0f)
 {
     m_body.setSize(sf::Vector2f(32, 32));
     m_body.setPosition(64, 240); //256 - 16 due to sfml rectangles using top left
@@ -14,7 +14,7 @@ void Bird::draw(sf::RenderTarget& render)
 
 void Bird::bounce()
 {
-    m_velocity = -1800.0f; //this will shoot/jump the bird up
+    m_velocity = -750.0f;
 }
 
 
@@ -25,4 +25,14 @@ void Bird::update(float dt)
         m_velocity = m_maxSpeed;
 
     m_body.move(0, m_velocity * dt);
+}
+
+const sf::Vector2f& Bird::getPosition() const
+{
+    return m_body.getPosition();
+}
+
+const sf::Vector2f& Bird::getSize() const
+{
+    return m_body.getSize();
 }
