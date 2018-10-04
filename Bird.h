@@ -11,6 +11,9 @@ public:
     void draw(sf::RenderTarget& render);
     void update(float dt);
     void bounce();
+
+    const sf::Vector2f& getPosition() const;
+    const sf::Vector2f& getSize() const;
 private:
     sf::RectangleShape m_body;
 
@@ -18,5 +21,6 @@ private:
     float m_velocity;
     float m_maxSpeed;
 };
+
 
 #endif // BIRD_H_INCLUDED
