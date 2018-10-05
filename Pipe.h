@@ -5,6 +5,8 @@
 #include<utility>
 #include<random>
 
+class Bird;
+
 class Pipe
 {
 public:
@@ -12,6 +14,7 @@ public:
 
     void draw(sf::RenderTarget& render);
     void update(float dt);
+    bool handleCollision(Bird& bird);
 
     const sf::Vector2f& getPosition() const;
 private:
