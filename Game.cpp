@@ -90,7 +90,7 @@ void Game::handleEvents()
             break;
         }
     }
-    //sadly mouse input has to go here as I want to limit bounces to button clicks
+    //sadly mouse input has to go here as I want to limit bounces to button clicks (without being held)
     //sf::IsButtonPressed() does not account for this and having two event loops doesnt work either
 }
 
