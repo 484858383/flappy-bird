@@ -11,6 +11,8 @@ public:
     void draw(sf::RenderTarget& render);
     void update(float dt);
     void bounce();
+    void reset();
+    void stop();
 
     const sf::Vector2f& getPosition() const;
     const sf::Vector2f& getSize() const;

@@ -5,6 +5,8 @@ Bird::Bird()
 {
     m_body.setSize(sf::Vector2f(32, 32));
     m_body.setPosition(64, 240); //256 - 16 due to sfml rectangles using top left
+
+    m_body.setFillColor(sf::Color::Yellow);
 }
 
 void Bird::draw(sf::RenderTarget& render)
@@ -17,6 +19,11 @@ void Bird::bounce()
     m_velocity = -750.0f;
 }
 
+void Bird::reset()
+{
+    m_body.setPosition(64, 240);
+    stop();
+}
 
 void Bird::update(float dt)
 {
@@ -24,7 +31,13 @@ void Bird::update(float dt)
     if(m_velocity >= m_maxSpeed)
         m_velocity = m_maxSpeed;
 
-    m_body.move(0, m_velocity * dt);
+    if(m_body.getPosition().y < 480.0f) //dont fall off of screen
+        m_body.move(0, m_velocity * dt);
+}
+
+void Bird::stop()
+{
+    m_velocity = 0.0f;
 }
 
 const sf::Vector2f& Bird::getPosition() const
