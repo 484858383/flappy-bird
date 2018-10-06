@@ -1,51 +1,82 @@
 #include"Bird.h"
 
-Bird::Bird()
-:m_gravity(25.0f), m_velocity(0.0f), m_maxSpeed(550.0f)
+namespace
 {
-    m_body.setSize(sf::Vector2f(32, 32));
-    m_body.setPosition(64, 240); //256 - 16 due to sfml rectangles using top left
+    sf::Vector2f& abs(sf::Vector2f&& vec)
+    {
+        if(vec.x < 0.0f)
+            vec.x = std::abs(vec.x);
 
-    m_body.setFillColor(sf::Color::Yellow);
+        if(vec.y < 0.0f)
+            vec.y = std::abs(vec.y);
+        return vec;
+    }
 }
 
-void Bird::draw(sf::RenderTarget& render)
+Pipe::Pipe()
+:m_rng(std::time(nullptr)), m_velocity(-250.0f), m_distance(128), m_passed(false)
 {
-    render.draw(m_body);
+    std::uniform_int_distribution<int> dist(32, 352);
+    int topHeight = dist(m_rng);
+
+    sf::RectangleShape top(sf::Vector2f(48, topHeight));
+    top.setPosition(1280, 0);
+    top.setFillColor(sf::Color::Green);
+    m_body.first = top;
+
+    int bottomHeight = 512 - (topHeight + m_distance);
+
+    sf::RectangleShape bottom(sf::Vector2f(48, bottomHeight));
+    bottom.setPosition(1280, topHeight + m_distance);
+    bottom.setFillColor(sf::Color::Green);
+    m_body.second = bottom;
 }
 
-void Bird::bounce()
+void Pipe::draw(sf::RenderTarget& render)
 {
-    m_velocity = -750.0f;
+    render.draw(m_body.first);
+    render.draw(m_body.second);
 }
 
-void Bird::reset()
+void Pipe::update(float dt)
 {
-    m_body.setPosition(64, 240);
-    stop();
+    m_body.first.move(dt * m_velocity, 0);
+    m_body.second.move(dt * m_velocity, 0);
 }
 
-void Bird::update(float dt)
+bool Pipe::handleCollision(Bird& bird)
 {
-    m_velocity += m_gravity;
-    if(m_velocity >= m_maxSpeed)
-        m_velocity = m_maxSpeed;
+    auto birdPos    = bird.getPosition() + (bird.getSize() / 2.0f);
+    auto thisPosTop = m_body.first.getPosition()  + (m_body.first.getSize() / 2.0f);
+    auto thisPosBot = m_body.second.getPosition() + (m_body.second.getSize() / 2.0f);
 
-    if(m_body.getPosition().y < 480.0f) //dont fall off of screen
-        m_body.move(0, m_velocity * dt);
+    auto birdHalfSize    = bird.getSize() / 2.0f;
+    auto thisHalfSizeTop = m_body.first.getSize() / 2.0f;
+    auto thisHalfSizeBot = m_body.second.getSize() / 2.0f;
+
+    sf::Vector2f deltaTop = abs(birdPos - thisPosTop) - (thisHalfSizeTop + birdHalfSize);
+    sf::Vector2f deltaBot = abs(birdPos - thisPosBot) - (thisHalfSizeBot + birdHalfSize);
+
+    if((deltaTop.x <= 0.0f && deltaTop.y <= 0.0f) ||
+       (deltaBot.x <= 0.0f && deltaBot.y <= 0.0f))
+    {
+        return true;
+    }
+    return false;
 }
 
-void Bird::stop()
+void Pipe::handleScores(float xPos, int& score)
 {
-    m_velocity = 0.0f;
+    float thisX = m_body.first.getPosition().x + (m_body.first.getSize().x / 2.0f);
+    if(xPos > thisX && !m_passed)
+    {
+        score++;
+        m_passed = true;
+    }
+
 }
 
-const sf::Vector2f& Bird::getPosition() const
+const sf::Vector2f& Pipe::getPosition() const
 {
-    return m_body.getPosition();
-}
-
-const sf::Vector2f& Bird::getSize() const
-{
-    return m_body.getSize();
+    return m_body.first.getPosition();
 }
