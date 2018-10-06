@@ -3,11 +3,38 @@
 #include<SFML/System/Clock.hpp>
 #include<iostream>
 
+namespace
+{
+    sf::Text createText(const sf::Font& font)
+    {
+        sf::Text text;
+        text.setCharacterSize(48);
+        text.setPosition(400, 208);
+        text.setOutlineColor(sf::Color::Black);
+        text.setOutlineThickness(2.0f);
+        text.setFont(font);
+        return text;
+    }
+}
+
 Game::Game()
-:m_loss(false), m_ready(false)
+:m_loss(false), m_ready(false), m_score(0)
 {
     m_window.create(sf::VideoMode(1024,512), "window", sf::Style::Close);
     m_window.setFramerateLimit(120);
+    m_window.setKeyRepeatEnabled(false);
+
+    m_font.loadFromFile("res/pixel.ttf");
+
+    m_lossMessage  = createText(m_font);
+    m_startMessage = createText(m_font);
+    m_scoreText    = createText(m_font);
+
+    m_startMessage.setString("Click or press Space to start\n\t\t\tClick to fly");
+    m_startMessage.setPosition(336, 208);
+
+    m_scoreText.setCharacterSize(88);
+    m_scoreText.setPosition(32, -24);
 }
 
 void Game::run()
@@ -42,6 +69,7 @@ void Game::update(float dt)
     for(auto& pipe : m_pipes)
         pipe->update(dt);
     handleCollisions();
+    handleScoring();
 
     if(timer.getElapsedTime().asSeconds() >= 1.50f)
     {
@@ -49,6 +77,8 @@ void Game::update(float dt)
         timer.restart();
     }
     deletePipes(); //this should ideally be last operation on the pipes
+
+    m_scoreText.setString(std::to_string(m_score));
 }
 
 void Game::render()
@@ -56,6 +86,12 @@ void Game::render()
     for(auto& pipe : m_pipes)
         pipe->draw(m_window);
    m_bird.draw(m_window);
+
+    if(!m_ready && !m_loss)
+        m_window.draw(m_startMessage);
+    if(m_loss)
+        m_window.draw(m_lossMessage);
+    m_window.draw(m_scoreText);
 }
 
 
@@ -63,8 +99,8 @@ void Game::handleInput(float dt)
 {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::R) && m_loss)
         reset();
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !m_ready ||
-       sf::Mouse::isButtonPressed(sf::Mouse::Left) && !m_ready)
+    if((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !m_ready) ||
+       (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !m_ready))
     {
         m_ready = true;
         m_bird.bounce();
@@ -83,6 +119,8 @@ void Game::handleEvents()
         case sf::Event::KeyPressed:
             if(e.key.code == sf::Keyboard::Escape)
                 m_window.close();
+            if(e.key.code == sf::Keyboard::Space)
+                m_bird.bounce();
         case sf::Event::MouseButtonPressed:
             if(e.mouseButton.button == sf::Mouse::Left && !m_loss)
                 m_bird.bounce();
@@ -90,7 +128,7 @@ void Game::handleEvents()
             break;
         }
     }
-    //sadly mouse input has to go here as I want to limit bounces to button clicks (without being held)
+    //sadly mouse input has to go here as I want to limit bounces to button clicks
     //sf::IsButtonPressed() does not account for this and having two event loops doesnt work either
 }
 
@@ -117,13 +155,23 @@ void Game::handleCollisions()
         if((*iter)->handleCollision(m_bird))
         {
             m_loss = true;
+            m_lossMessage.setString("You scored: " + std::to_string(m_score) + "\nPress R to play again");
             break;
         }
     }
     if(m_bird.getPosition().y < 0.0f || m_bird.getPosition().y >= 480.0f)
     {
         m_loss = true;
+        m_lossMessage.setString("You scored: " + std::to_string(m_score) + "\nPress R to play again");
         m_bird.stop();
+    }
+}
+
+void Game::handleScoring()
+{
+    for(auto iter = m_pipes.begin(); iter != m_pipes.end(); iter++)
+    {
+        (*iter)->handleScores(m_bird.getPosition().x, m_score);
     }
 }
 
@@ -132,5 +180,8 @@ void Game::reset()
     m_pipes.clear();
     m_loss  = false;
     m_ready = false;
+    m_score = 0;
     m_bird.reset();
+
+    m_scoreText.setString(std::to_string(m_score));
 }
