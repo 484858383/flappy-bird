@@ -23,9 +23,15 @@ private:
     sf::RenderWindow m_window;
     std::vector<std::unique_ptr<Pipe>> m_pipes;
 
+    sf::Font m_font;
+    sf::Text m_scoreText;
+    sf::Text m_lossMessage;
+    sf::Text m_startMessage;
+
     Bird m_bird;
     bool m_loss;
     bool m_ready;
+    int  m_score;
 private:
     void handleInput(float dt);
     void handleEvents();
@@ -35,6 +41,7 @@ private:
     void addPipe();
     void deletePipes();
     void handleCollisions();
+    void handleScoring();
     void reset();
 };
 
