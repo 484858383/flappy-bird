@@ -11,10 +11,10 @@ class Pipe
 {
 public:
     Pipe();
-
     void draw(sf::RenderTarget& render);
     void update(float dt);
     bool handleCollision(Bird& bird);
+    void handleScores(float xPos, int& score); //xPos is birds x position
 
     const sf::Vector2f& getPosition() const;
 private:
@@ -23,6 +23,7 @@ private:
 
     float m_velocity;
     int m_distance;
+    bool m_passed;
 };
 
 #endif // PIPE_H_INCLUDED
