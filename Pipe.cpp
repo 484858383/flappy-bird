@@ -1,8 +1,10 @@
 #include"Pipe.h"
 
+#include"Bird.h"
+
 namespace
 {
-    sf::Vector2f& abs(sf::Vector2f&& vec) //std::abs() for Vector2
+    sf::Vector2f& abs(sf::Vector2f&& vec)
     {
         if(vec.x < 0.0f)
             vec.x = std::abs(vec.x);
@@ -14,7 +16,7 @@ namespace
 }
 
 Pipe::Pipe()
-:m_rng(std::time(nullptr)), m_velocity(-250.0f), m_distance(128)
+:m_rng(std::time(nullptr)), m_velocity(-250.0f), m_distance(128), m_passed(false)
 {
     std::uniform_int_distribution<int> dist(32, 352);
     int topHeight = dist(m_rng);
@@ -63,6 +65,17 @@ bool Pipe::handleCollision(Bird& bird)
         return true;
     }
     return false;
+}
+
+void Pipe::handleScores(float xPos, int& score)
+{
+    float thisX = m_body.first.getPosition().x + (m_body.first.getSize().x / 2.0f);
+    if(xPos > thisX && !m_passed)
+    {
+        score++;
+        m_passed = true;
+    }
+
 }
 
 const sf::Vector2f& Pipe::getPosition() const
