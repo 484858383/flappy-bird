@@ -35,6 +35,9 @@ Game::Game()
 
     m_scoreText.setCharacterSize(88);
     m_scoreText.setPosition(32, -24);
+
+    m_pipeBody.loadFromFile("res/pipe.png");
+    m_pipeTop.loadFromFile("res/pipe top.png");
 }
 
 void Game::run()
@@ -79,13 +82,16 @@ void Game::update(float dt)
     deletePipes(); //this should ideally be last operation on the pipes
 
     m_scoreText.setString(std::to_string(m_score));
+    m_bg.update(dt);
 }
 
 void Game::render()
 {
+    m_bg.drawBackground(m_window);
     for(auto& pipe : m_pipes)
         pipe->draw(m_window);
-   m_bird.draw(m_window);
+    m_bg.drawForeground(m_window);
+    m_bird.draw(m_window);
 
     if(!m_ready && !m_loss)
         m_window.draw(m_startMessage);
@@ -134,7 +140,7 @@ void Game::handleEvents()
 
 void Game::addPipe()
 {
-    m_pipes.push_back(std::make_unique<Pipe>());
+    m_pipes.push_back(std::make_unique<Pipe>(m_pipeTop, m_pipeBody));
 }
 
 void Game::deletePipes()
@@ -182,6 +188,8 @@ void Game::reset()
     m_ready = false;
     m_score = 0;
     m_bird.reset();
+    m_bg.reset();
 
     m_scoreText.setString(std::to_string(m_score));
 }
+
