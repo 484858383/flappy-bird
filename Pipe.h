@@ -4,13 +4,14 @@
 #include<SFML/Graphics.hpp>
 #include<utility>
 #include<random>
+#include<array>
 
 class Bird;
 
 class Pipe
 {
 public:
-    Pipe();
+    Pipe(sf::Texture& textureTop, sf::Texture& textureBody);
     void draw(sf::RenderTarget& render);
     void update(float dt);
     bool handleCollision(Bird& bird);
@@ -24,6 +25,11 @@ private:
     float m_velocity;
     int m_distance;
     bool m_passed;
-};
+
+    sf::Texture* m_textureTop;
+    sf::Texture* m_textureBody;
+private:
+    void texturePipe();
+    std::array<sf::RectangleShape, 4> m_model;
 
 #endif // PIPE_H_INCLUDED
