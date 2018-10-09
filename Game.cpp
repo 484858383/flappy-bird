@@ -1,7 +1,6 @@
 #include"Game.h"
 
 #include<SFML/System/Clock.hpp>
-#include<iostream>
 
 namespace
 {
