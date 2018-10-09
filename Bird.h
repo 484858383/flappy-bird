@@ -18,6 +18,7 @@ public:
     const sf::Vector2f& getSize() const;
 private:
     sf::RectangleShape m_body;
+    sf::Texture m_texture;
 
     float m_gravity;
     float m_velocity;

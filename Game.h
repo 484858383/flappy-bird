@@ -6,12 +6,7 @@
 
 #include"Bird.h"
 #include"Pipe.h"
-
-#include<SFML/Graphics.hpp>
-#include<memory>
-
-#include"Bird.h"
-#include"Pipe.h"
+#include"Background/Background.h"
 
 class Game
 {
@@ -28,10 +23,15 @@ private:
     sf::Text m_lossMessage;
     sf::Text m_startMessage;
 
+    sf::Texture m_pipeBody;
+    sf::Texture m_pipeTop;
+
     Bird m_bird;
     bool m_loss;
     bool m_ready;
     int  m_score;
+
+    Background m_bg;
 private:
     void handleInput(float dt);
     void handleEvents();

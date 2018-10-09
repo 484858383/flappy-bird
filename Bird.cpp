@@ -3,10 +3,11 @@
 Bird::Bird()
 :m_gravity(25.0f), m_velocity(0.0f), m_maxSpeed(550.0f)
 {
-    m_body.setSize(sf::Vector2f(32, 32));
+    m_body.setSize({32, 32});
     m_body.setPosition(64, 240); //256 - 16 due to sfml rectangles using top left
+    m_texture.loadFromFile("res/duck.png");
 
-    m_body.setFillColor(sf::Color::Yellow);
+    m_body.setTexture(&m_texture);
 }
 
 void Bird::draw(sf::RenderTarget& render)

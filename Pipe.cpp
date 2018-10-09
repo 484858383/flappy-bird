@@ -15,35 +15,39 @@ namespace
     }
 }
 
-Pipe::Pipe()
-:m_rng(std::time(nullptr)), m_velocity(-250.0f), m_distance(128), m_passed(false)
+Pipe::Pipe(sf::Texture& textureTop, sf::Texture& textureBody)
+:m_rng(std::time(nullptr)), m_velocity(-250.0f), m_distance(128),
+ m_passed(false), m_textureTop(&textureTop), m_textureBody(&textureBody)
 {
     std::uniform_int_distribution<int> dist(32, 352);
-    int topHeight = dist(m_rng);
+    float topHeight = static_cast<int>(dist(m_rng));
 
-    sf::RectangleShape top(sf::Vector2f(48, topHeight));
+    sf::RectangleShape top({48, topHeight});
     top.setPosition(1280, 0);
-    top.setFillColor(sf::Color::Green);
     m_body.first = top;
 
-    int bottomHeight = 512 - (topHeight + m_distance);
+    float bottomHeight = 512 - (topHeight + m_distance);
 
-    sf::RectangleShape bottom(sf::Vector2f(48, bottomHeight));
+    sf::RectangleShape bottom({48, bottomHeight});
     bottom.setPosition(1280, topHeight + m_distance);
-    bottom.setFillColor(sf::Color::Green);
     m_body.second = bottom;
+
+    texturePipe();
 }
 
 void Pipe::draw(sf::RenderTarget& render)
 {
-    render.draw(m_body.first);
-    render.draw(m_body.second);
+    for(auto& part : m_model)
+        render.draw(part);
 }
 
 void Pipe::update(float dt)
 {
     m_body.first.move(dt * m_velocity, 0);
     m_body.second.move(dt * m_velocity, 0);
+
+    for(auto& part : m_model)
+        part.move(dt * m_velocity, 0);
 }
 
 bool Pipe::handleCollision(Bird& bird)
@@ -75,8 +79,34 @@ void Pipe::handleScores(float xPos, int& score)
         score++;
         m_passed = true;
     }
-
 }
+
+void Pipe::texturePipe()
+{
+    auto& topSize = m_body.first.getSize();
+    auto& botSize = m_body.second.getSize();
+
+    sf::RectangleShape topBody(sf::Vector2f(48, topSize.y - 16));
+    topBody.setPosition(1280, 0);
+    topBody.setTexture(m_textureBody);
+    m_model[0] = topBody;
+
+    sf::RectangleShape bottomBody(sf::Vector2f(48, botSize.y - 16));
+    bottomBody.setPosition(1280, topSize.y + m_distance + 16);
+    bottomBody.setTexture(m_textureBody);
+    m_model[1] = bottomBody;
+
+    sf::RectangleShape top(sf::Vector2f(48, 16));
+    top.setPosition(1280, topSize.y - 16);
+    top.setTexture(m_textureTop);
+    m_model[2] = top;
+
+    sf::RectangleShape bottom(sf::Vector2f(48, 16));
+    bottom.setPosition(1280, topSize.y + m_distance);
+    bottom.setTexture(m_textureTop);
+    m_model[3] = bottom;
+}
+
 
 const sf::Vector2f& Pipe::getPosition() const
 {
