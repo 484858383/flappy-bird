@@ -1,7 +1,7 @@
 #include"Foliage.h"
 
 Foliage::Foliage(sf::Texture& texture)
-:Prop(texture,{176, 128},  300.0f)
+:Prop(texture,{176, 128}, 200.0f)
 {
     setRect();
 }
