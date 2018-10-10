@@ -87,9 +87,9 @@ void Game::update(float dt)
 void Game::render()
 {
     m_bg.drawBackground(m_window);
+    m_bg.drawForeground(m_window);
     for(auto& pipe : m_pipes)
         pipe->draw(m_window);
-    m_bg.drawForeground(m_window);
     m_bird.draw(m_window);
 
     if(!m_ready && !m_loss)
