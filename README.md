@@ -15,6 +15,4 @@ the classes that actually hold and pass the textures (Game and Background) only 
 -to texture pipes i split each one up into 2 parts (4 total), top and body, the top is the opening in the pipe and the body is the body.
 i did this as sfml scaled the pipes wierldy and i wanted all the pipe openings to be the same size
 
--there may be one or two more additions if i get a nicer looking background texture
-
 
